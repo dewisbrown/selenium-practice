@@ -1,3 +1,4 @@
+import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
@@ -48,3 +49,9 @@ def test_submit_form():
     search_results = driver.find_elements(By.TAG_NAME, 'h2')
     assert len(search_results) > 0, f'No results found for "{search_input}"'
     driver.quit()
+
+
+# Test Case 5: Check Page Response Code
+def test_check_page_response_code():
+    response = requests.get('http://www.example.com')
+    assert response.status_code == 200, f'Expected status code: 200, Actual status code: {response.status_code}'
