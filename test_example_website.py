@@ -1,6 +1,8 @@
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 
 # Test Case 1: Verify Page Title
 def test_verify_page_title():
@@ -53,5 +55,54 @@ def test_submit_form():
 
 # Test Case 5: Check Page Response Code
 def test_check_page_response_code():
-    response = requests.get('http://www.example.com')
-    assert response.status_code == 200, f'Expected status code: 200, Actual status code: {response.status_code}'
+    r = requests.get('http://www.example.com')
+    assert r.status_code == 200, f'Expected status code: 200, Actual status code: {r.status_code}'
+
+
+# Test Case 6: Check Alert Text
+# https://www.selenium.dev/documentation/webdriver/interactions/alerts/
+def test_alert_text():
+    driver = webdriver.Chrome()
+    driver.get('https://the-internet.herokuapp.com/javascript_alerts')
+    driver.find_element(By.XPATH, '//*[@id="content"]/div/ul/li[1]/button').click()
+    
+    # wait for the alert
+    wait = WebDriverWait(driver, 3)
+    alert = wait.until(expected_conditions.alert_is_present())
+
+    alert_text = alert.text     # Text in the alert popup
+    alert.accept()
+    expected_text = 'I am a JS Alert'
+    assert alert_text == expected_text, f'Expected alert text: {expected_text}, Actual alert text: {alert_text}'
+    driver.quit()
+
+# Test Case 7: Check Result of Canceling JS Confirm
+def test_cancel_confirm():
+    driver = webdriver.Chrome()
+    driver.get('https://the-internet.herokuapp.com/javascript_alerts')
+    driver.find_element(By.XPATH, '//*[@id="content"]/div/ul/li[2]/button').click()
+
+    # wait for the alert
+    wait = WebDriverWait(driver, 3)
+    alert = wait.until(expected_conditions.alert_is_present())
+
+    alert.dismiss()
+    expected_result = 'You clicked: Cancel'
+    result = driver.find_element(By.ID, 'result').text
+    assert result == expected_result, f'Expected alert text: {expected_result}, Actual result text: {result}'
+
+
+# Test Case 8: Check Result of Confirm
+def test_ok_confirm():
+    driver = webdriver.Chrome()
+    driver.get('https://the-internet.herokuapp.com/javascript_alerts')
+    driver.find_element(By.XPATH, '//*[@id="content"]/div/ul/li[2]/button').click()
+
+    # wait for the alert
+    wait = WebDriverWait(driver, 3)
+    alert = wait.until(expected_conditions.alert_is_present())
+
+    alert.accept()
+    expected_result = 'You clicked: Ok'
+    result = driver.find_element(By.ID, 'result').text
+    assert result == expected_result, f'Expected alert text: {expected_result}, Actual result text: {result}'
